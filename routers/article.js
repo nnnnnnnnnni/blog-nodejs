@@ -10,22 +10,45 @@ app.use(bodyparse.urlencoded({
     extended: true
 }))
 
+//获取文章总数
+app.get('/count',(req,res)=>{
+    db.Article.find().count().lean().exec((err,data)=>{
+        if(err){
+            return res.send({
+                status: 400,
+                msg: 'fail!'
+            })
+        }
+        res.send({
+            status: 200,
+            data: data
+        })
+    })
+})
+
 //所有文章列表
 app.get('/list',(req,res)=>{
-    let page = req.query.page
     let id = req.query.id || req.body.id || req.params.id
+    let isShow = req.query.isShow || req.body.isShow || req.params.isShow
+    let page = req.query.page || req.body.page || req.params.page
     let params = {}
     if(id){
         params = {userId: id}
+    }
+    if(isShow){
+        params['status'] = 1
     }
     let converter = new showdown.Converter()
 	db.Article.find(params)
 	.lean()
     .sort({create_time:-1})
-    .limit(6)
     .skip((page-1)*6)
+    .limit(6)
 	.exec((err,data)=>{
         data.text = converter.makeHtml(data.text)
+        data.forEach(el =>{
+            el.summary = el.text.substr(0,160)
+        })
 		if(err){
 			return res.send({
 				status: 400,
@@ -60,8 +83,8 @@ app.get('/categories',(req,res)=>{
 })
 
 //分类文章
-app.get('/getbycategories',(req,res)=>{
-    var name = req.query.name;
+app.get('/getbycategories/:name',(req,res)=>{
+    var name = req.params.name;
     db.Article.find({categories:name})
     .lean()
     .sort({create_time:-1})
@@ -103,9 +126,9 @@ app.get('/tags',(req,res)=>{
 })
 
 //标签文章
-app.get('/getbytag',(req,res)=>{
-    var tag = req.query.tag
-    db.Article.find({tags:{$in:[tag]}})
+app.get('/getbytag/:name',(req,res)=>{
+    var name = req.params.name
+    db.Article.find({tags:{$in:[name]}})
     .lean()
     .sort({create_time:-1})
     .exec((err,data)=>{
@@ -142,9 +165,9 @@ app.get('/id/:id',(req,res)=>{
 })
 
 //模糊查询
-app.get('/search/:title',(req,res)=>{
-    var title = req.params.title
-    db.Article.find({title:new RegExp(title)})
+app.get('/search/:name',(req,res)=>{
+    var name = req.params.name
+    db.Article.find({title:{$regex:name,$options:'i'}})
     .lean()
     .exec((err,data)=>{
         if(err){
