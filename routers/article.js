@@ -12,7 +12,18 @@ app.use(bodyparse.urlencoded({
 
 //获取文章总数
 app.get('/count',(req,res)=>{
-    db.Article.find().count().lean().exec((err,data)=>{
+    let id = req.query.id
+    let isShow = req.query.isShow || false
+    let param = {}
+    if(id){
+        param ={
+            userId:id
+        }
+    }
+    if(isShow){
+        param['status'] = 1
+    }
+    db.Article.find(param).count().lean().exec((err,data)=>{
         if(err){
             return res.send({
                 status: 400,
@@ -31,6 +42,7 @@ app.get('/list',(req,res)=>{
     let id = req.query.id || req.body.id || req.params.id
     let isShow = req.query.isShow || req.body.isShow || req.params.isShow
     let page = req.query.page || req.body.page || req.params.page
+    let count = req.query.count || req.body.count || req.params.count || 6
     let params = {}
     if(id){
         params = {userId: id}
@@ -42,19 +54,19 @@ app.get('/list',(req,res)=>{
 	db.Article.find(params)
 	.lean()
     .sort({create_time:-1})
-    .skip((page-1)*6)
-    .limit(6)
+    .skip((page-1)*Number(count))
+    .limit(Number(count))
 	.exec((err,data)=>{
-        data.text = converter.makeHtml(data.text)
-        data.forEach(el =>{
-            el.summary = el.text.substr(0,160)
-        })
 		if(err){
 			return res.send({
 				status: 400,
 				msg: 'fail!'
 			})
 		}
+        data.text = converter.makeHtml(data.text)
+        data.forEach(el =>{
+            el.summary = el.text.substr(0,160)
+        })
         res.send({
             status: 200,
             data: data
@@ -206,6 +218,24 @@ app.post('/updateStatus',(req,res)=>{
         })
     })
 })
+//删除文章
+app.post('/del',(req,res)=>{
+    var id = req.body.id
+    db.Article.deleteOne({
+        _id: id
+    }).exec((err,data)=>{
+        if(err){
+            return res.send({
+                status: 400,
+                msg: "fail!"
+            })
+        }
+        res.send({
+            status: 200,
+            msg: '删除成功'
+        })
+    })
+})
 //上传文章
 app.post('/post',(req,res)=>{
     if(!req.session.user){
@@ -225,6 +255,47 @@ app.post('/post',(req,res)=>{
         title:       title,
         status:      status,
         create_time: tools.getTime(),
+        update_time: tools.getTime(),
+        tags:        tags,
+        categories:  categories,
+        text:        text, 
+        userId:      userId,
+        username:    username,
+    },(err,data)=>{
+        if(err){
+            return res.send({
+                status: 400,
+                msg: err
+            })
+        }
+        res.send({
+            status: 200,
+            msg: '成功'
+        })
+    })
+})
+
+//更新文章
+app.post('/update',(req,res)=>{
+    if(!req.session.user){
+        return res.send({
+            status: 400,
+            msg: '请刷新登录状态'
+        })
+    }
+    var username = req.session.user.name
+    var userId = req.session.user._id
+    var id = req.body.id
+    var title = req.body.title
+    var tags = req.body.tags
+    var categories = req.body.categories
+    var text = req.body.text
+    var status = req.body.status
+    db.Article.update({
+        _id: id
+    },{
+        title:       title,
+        status:      status,
         update_time: tools.getTime(),
         tags:        tags,
         categories:  categories,

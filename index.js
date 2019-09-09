@@ -14,8 +14,12 @@ app.use(session({
   }
 },app))
 
-app.get('/', function (req, res, next) {
+app.get('/:x', function (req, res, next) {
   if (req.session.views) {
+    if(req.session.views == 7){
+      req.session.destroy() 
+      req.session.views = 1
+    }
     req.session.views++
     res.write('<p>views: ' + req.session.views + '</p>')
     res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
