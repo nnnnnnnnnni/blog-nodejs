@@ -59,6 +59,7 @@ app.get('/info',(req,res)=>{
 					msg: '登录发生错误'
 				})
 			}
+			delete data.password
 			res.send({
 				status: 200 ,
 				data: data

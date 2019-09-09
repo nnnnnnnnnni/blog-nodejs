@@ -14,7 +14,7 @@ app.use(session({
   }
 },app))
 
-app.get('/:x', function (req, res, next) {
+app.get('/', function (req, res, next) {
   if (req.session.views) {
     if(req.session.views == 7){
       req.session.destroy() 
