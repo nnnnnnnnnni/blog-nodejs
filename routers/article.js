@@ -54,8 +54,8 @@ app.get('/list',(req,res)=>{
 	db.Article.find(params)
 	.lean()
     .sort({create_time:-1})
-    .skip((page-1)*Number(count))
     .limit(Number(count))
+    .skip((page-1)*Number(count))
 	.exec((err,data)=>{
 		if(err){
 			return res.send({

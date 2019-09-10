@@ -30,7 +30,7 @@ module.exports={
         if (sec < 10) {
             sec = '0' + sec;
         }
-        ret = '' + year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+        ret = '' + year + '-' + month + '-' + day;
         return ret;
     },
 }

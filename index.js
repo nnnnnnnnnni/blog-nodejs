@@ -35,7 +35,7 @@ app.use(express.static(__dirname + '/public'));
 //头部消息支持跨域
 app.all('*', function (req, res, next) {
   res.setHeader('Content-Type', 'application/json')
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+  // res.header("Access-Control-Allow-Origin", "http://localhost:8080");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
   res.header("Access-Control-Allow-Credentials", "true")
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
