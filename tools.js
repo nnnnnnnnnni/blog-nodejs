@@ -1,5 +1,5 @@
 module.exports={
-    getTime: function (theTime) {
+    getTime: function (theTime,type) {
         var time;
 
         if (theTime) {
@@ -30,7 +30,12 @@ module.exports={
         if (sec < 10) {
             sec = '0' + sec;
         }
-        ret = '' + year + '-' + month + '-' + day;
+        if(type ==1){
+            ret = '' + year + '-' + month + '-' + day;
+        }
+        if(type ==2){
+            ret = '' + year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+        }
         return ret;
     },
 }

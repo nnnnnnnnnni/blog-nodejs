@@ -44,8 +44,10 @@ app.get('/list',(req,res)=>{
     let page = req.query.page || req.body.page || req.params.page
     let count = req.query.count || req.body.count || req.params.count || 6
     let params = {}
+    let p = 1
     if(id){
         params = {userId: id}
+        p = 2
     }
     if(isShow){
         params['status'] = 1
@@ -66,6 +68,8 @@ app.get('/list',(req,res)=>{
         data.text = converter.makeHtml(data.text)
         data.forEach(el =>{
             el.summary = el.text.substr(0,160)
+            el.create_time = tools.getTime(el.create_time,p)
+            el.update_time = tools.getTime(el.update_time,p)
         })
         res.send({
             status: 200,
@@ -107,6 +111,10 @@ app.get('/getbycategories/:name',(req,res)=>{
                 msg: "fail!"
             })
         }
+        data.forEach(el =>{
+            el.create_time = tools.getTime(el.create_time,1)
+            el.update_time = tools.getTime(el.update_time,1)
+        })
         res.send({
             status: 200,
             data: data
@@ -150,6 +158,10 @@ app.get('/getbytag/:name',(req,res)=>{
                 msg:"fail!"
             })
         }
+        data.forEach(el =>{
+            el.create_time = tools.getTime(el.create_time,1)
+            el.update_time = tools.getTime(el.update_time,1)
+        })
         res.send({
             status:200,
             data:data
@@ -254,8 +266,8 @@ app.post('/post',(req,res)=>{
     db.Article.create({
         title:       title,
         status:      status,
-        create_time: tools.getTime(),
-        update_time: tools.getTime(),
+        create_time: new Date(),
+        update_time: new Date(),
         tags:        tags,
         categories:  categories,
         text:        text, 
@@ -296,7 +308,7 @@ app.post('/update',(req,res)=>{
     },{
         title:       title,
         status:      status,
-        update_time: tools.getTime(),
+        update_time: new Date(),
         tags:        tags,
         categories:  categories,
         text:        text, 
