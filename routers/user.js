@@ -11,6 +11,24 @@ app.use(bodyparse.urlencoded({
     extended: true
 }))
 
+//获取所有用户
+app.get('/users',(req,res)=>{
+	db.User.find().select('_id name permission')
+	.lean()
+	.exec((err,data)=>{
+		if(err){
+			return res.send({
+				status: 400,
+				msg: '用户查找错误'
+			})
+		}
+		return res.send({
+			status: 200 ,
+			data: data
+		})
+	})
+})
+
 //登录
 app.post('/login',(req,res)=>{
 	let mail = req.body.mail
@@ -111,6 +129,30 @@ app.post('/signup',(req,res)=>{
 				})	
 			}
 		}
+	})
+})
+
+//修改权限
+app.post('/UpPermission',(req,res)=>{
+	let id = req.body.id
+	let permission = req.body.permission;
+	db.User.update({
+		_id: id
+	},{
+		$set:{
+			permission: permission
+		}
+	},(err,data)=>{
+		if(err){
+			return res.send({
+				status: 400,
+				msg: '权限更改失败，请重试'
+			})
+		}
+		return res.send({
+			status: 200 ,
+			msg: '权限更改成功'
+		})
 	})
 })
 
