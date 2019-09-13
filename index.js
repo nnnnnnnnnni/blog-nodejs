@@ -2,7 +2,15 @@ const express = require('express')
 const app = express()
 const cfg = require('./config')
 const session = require('express-session')
+const ejs = require('ejs');
+var cors = require('cors');
 
+
+app.use(cors({
+    origin:['http://localhost:8080'],
+    methods:['GET','POST'],
+    alloweHeaders:['Conten-Type', 'Authorization']
+}));
 //session 设置
 app.use(session({
   key: 'user',
@@ -14,33 +22,39 @@ app.use(session({
   }
 },app))
 
+app.use(express.static('../blog/dist/'));
+
+app.engine('html', ejs.__express);
+app.set('view engine', 'html');
+app.set('views','../blog/dist/')
+
 app.get('/', function (req, res, next) {
-  if (req.session.views) {
-    if(req.session.views == 7){
-      req.session.destroy() 
-      req.session.views = 1
-    }
-    req.session.views++
-    res.write('<p>views: ' + req.session.views + '</p>')
-    res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
-    res.end()
-  } else {
-    req.session.views = 1
-    res.end('welcome to the session demo. refresh!')
-  }
+  res.render('index',{title:"doc"});
+  // if (req.session.views) {
+  //   if(req.session.views == 7){
+  //     req.session.destroy() 
+  //     req.session.views = 1
+  //   }
+  //   req.session.views++
+  //   res.write('<p>views: ' + req.session.views + '</p>')
+  //   res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+  //   res.end()
+  // } else {
+  //   req.session.views = 1
+  //   res.end('welcome to the session demo. refresh!')
+  // }
 })
 
-app.use(express.static(__dirname + '/public'));
 
 //头部消息支持跨域
-app.all('*', function (req, res, next) {
-  res.setHeader('Content-Type', 'application/json')
-  // res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-  res.header("Access-Control-Allow-Credentials", "true")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+// app.all('*', function (req, res, next) {
+//   // res.setHeader('Content-Type', 'application/json')
+//   res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+//   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+//   res.header("Access-Control-Allow-Credentials", "true")
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//   next();
+// });
 
 app.use('/article', require('./routers/article'))
 app.use('/user', require('./routers/user') )
