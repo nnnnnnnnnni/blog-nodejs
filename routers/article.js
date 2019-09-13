@@ -181,6 +181,10 @@ app.get('/id/:id',(req,res)=>{
                 msg:"fail!"
             })
         }
+        data.forEach(el =>{
+            el.create_time = tools.getTime(el.create_time,1)
+            el.update_time = tools.getTime(el.update_time,1)
+        })
         res.send({
             status:200,
             data:data
