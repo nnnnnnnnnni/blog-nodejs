@@ -3,14 +3,14 @@ const app = express()
 const cfg = require('./config')
 const session = require('express-session')
 const ejs = require('ejs');
-var cors = require('cors');
+let cors = require('cors');
+let history =  require('connect-history-api-fallback')
+ 
 
-
-app.use(cors({
-    origin:['http://localhost:8080'],
-    methods:['GET','POST'],
-    alloweHeaders:['Conten-Type', 'Authorization']
-}));
+//页面刷新404设置
+app.use('/',history());
+//跨域设置
+app.use(cors());
 //session 设置
 app.use(session({
   key: 'user',
@@ -30,19 +30,6 @@ app.set('views','../blog/dist/')
 
 app.get('/', function (req, res, next) {
   res.render('index',{title:"doc"});
-  // if (req.session.views) {
-  //   if(req.session.views == 7){
-  //     req.session.destroy() 
-  //     req.session.views = 1
-  //   }
-  //   req.session.views++
-  //   res.write('<p>views: ' + req.session.views + '</p>')
-  //   res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
-  //   res.end()
-  // } else {
-  //   req.session.views = 1
-  //   res.end('welcome to the session demo. refresh!')
-  // }
 })
 
 

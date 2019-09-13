@@ -34,7 +34,7 @@ let userSchema = new Schema({
 	}
 })
 
-let User = db.model('user',userSchema, 'user')
+let User = db.model('user',userSchema)
 
 module.exports = {
 	Article: Article,
