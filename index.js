@@ -3,8 +3,8 @@ const app = express()
 const cfg = require('./config')
 const session = require('express-session')
 const ejs = require('ejs');
-let cors = require('cors');
-let history =  require('connect-history-api-fallback')
+const cors = require('cors');
+const history =  require('connect-history-api-fallback')
  
 
 //页面刷新404设置
@@ -43,8 +43,8 @@ app.get('/', function (req, res, next) {
 //   next();
 // });
 
-app.use('/article', require('./routers/article'))
-app.use('/user', require('./routers/user') )
+app.use('/api/article', require('./routers/article'))
+app.use('/api/user', require('./routers/user') )
 
 
 console.log('server start at port ' + cfg.port)
