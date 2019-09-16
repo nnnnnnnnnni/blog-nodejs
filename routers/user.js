@@ -168,13 +168,7 @@ app.post('/logout',(req,res)=>{
 //获取session信息
 app.get('/info',(req,res)=>{
 	if(req.session.user){
-		db.User.findOne({
-			$or:[{
-				mobile: req.session.user.mobile
-			},{
-				mail: req.session.user.mail
-			}]
-		}).lean()
+		db.User.findOne({mail: req.session.user.mail}).lean()
 		.exec((err,data)=>{
 			if(err){
 				return res.send({
