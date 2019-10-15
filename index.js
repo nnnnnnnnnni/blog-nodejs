@@ -6,8 +6,8 @@ const ejs = require('ejs');
 const cors = require('cors');
 const history =  require('connect-history-api-fallback')
  
-//我在本地
-//我改了文件
+//我在本地修改了文件
+
 //页面刷新404设置
 app.use('/',history());
 //跨域设置
